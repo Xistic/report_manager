@@ -1,14 +1,16 @@
 require_relative 'report_manager'
 require 'date'
+require 'json'
+
 
 class ReportTimeMachine
 
     def initialize
         @today = Date.today
-        @report_type = report_type
+        @holidays = load_json('chest/consultant2024.json')
     end
 
-    def date_deadline(report_type)
+    def deadline_date(report_type)
         case report_type.downcase
         when 'monthly'
             get_deadline(report_type)
@@ -63,8 +65,8 @@ class ReportTimeMachine
     end
 
     def working_days_only(start_month)
-        current_day = Date.new(start_date.year, start_date.month, 1)
-  
+        current_day = Date.new(start_month.year, start_month.month, 1)
+        working_days = 10
         until working_days == 0
             current_day += 1
             working_days -= 1 unless weekend_or_holiday?(current_day)
@@ -81,5 +83,10 @@ class ReportTimeMachine
     def holiday?(date)
         @holidays.include?(date.strftime("%Y-%m-%d"))
     end
+
+    def load_json(file_path)
+        JSON.parse(File.read(file_path))
+    end
+
 
 end 
