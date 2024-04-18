@@ -11,29 +11,11 @@ class ReportTimeMachine
     end
 
     def deadline_date(report_type)
-        case report_type.downcase
-        when 'monthly'
-            get_deadline(report_type)
-        when 'quarterly'
-            get_deadline(report_type)
-        when 'annual'
-            get_deadline(report_type)
-        else
-            raise ArgumentError, "Что за тип, братишка?: #{report_type}"
-        end 
+        get_deadline(report_type)
     end
 
     def days_to_deadline(report_type)
-        case report_type.downcase
-        when 'monthly'
-            (get_deadline(report_type) - @today).to_i 
-        when 'quarterly'
-            (get_deadline(report_type) - @today).to_i
-        when 'annual'
-            (get_deadline(report_type) - @today).to_i
-        else
-            raise ArgumentError, "Что за тип, братишка?: #{report_type}"
-        end 
+        (get_deadline(report_type) - @today).to_i 
     end
 
     private 
@@ -42,10 +24,15 @@ class ReportTimeMachine
         case report_type.downcase
         when 'monthly'
             working_days_only(@today.next_month)
-        when 'quarterly'
+        when 'quarterly_10'
             working_days_only(end_of_quarter(@today).next_month) 
-        when 'annual'
+        when 'quarterly_30'
+            quarterly_start = end_of_quarter(@today).next_month
+            Date.new(quarterly_start.year, quarterly_start.month, 30)
+        when 'annual_10'
             working_days_only(Date.new(@today.year + 1, 1, 30))
+        when 'annual_30'
+            Date.new(@today.year + 1, 1, 30)
         else
             raise ArgumentError, "Что за тип, братишка?: #{report_type}"
         end 
