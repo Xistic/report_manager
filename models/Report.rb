@@ -8,8 +8,12 @@ class Report
         @days_to_deadline = days_to_deadline
     end
 
-    def to_s
-        "Type: #{@type}, Date Deadline: #{date_deadline}, Days to Deadline: #{days_to_deadline}"
+    def to_json
+        {
+          "Type" => @type,
+          "Date-Deadline" => @date_deadline,
+          "Days-to-Deadline" => @days_to_deadline
+        }.to_json
     end
 
 end
