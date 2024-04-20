@@ -21,6 +21,7 @@ class ReportManager
     days_to_deadline = @time_machine.days_to_deadline(type)
   
     report = Report.new(type, date_deadline, days_to_deadline)
+
     report_file = @report_files[type.to_sym]
     write_report_to_file(report, report_file)
   end
@@ -31,7 +32,6 @@ class ReportManager
 
     @report_files.each do |type, file_path|
       report_data = load_report_data(file_path)
-      puts "Отчет из общего списка #{report_data}"
       if report_data && report_data['Days-to-Deadline'] < min_days_to_deadline
         min_days_to_deadline = report_data['Days-to-Deadline']
         min_days_report = report_data
@@ -39,11 +39,11 @@ class ReportManager
     end
 
     puts min_days_report
-    puts min_days_to_deadline
   end
 
   def update_report()
     @report_files.each do |type, file_path|
+
       report_data = load_report_data(file_path)
       if @time_machine.check_report_condition(report_data, type)
      
