@@ -52,13 +52,13 @@ class ReportTimeMachine
   def end_of_quarter(day)
     case day.month
     when 1..3 
-      return Date.new(day.year, 3, 31)
+      Date.new(day.year, 3, 31)
     when 4..6 
-      return Date.new(day.year, 6, 30)
+      Date.new(day.year, 6, 30)
     when 7..9 
-      return Date.new(day.year, 9, 30)
+      Date.new(day.year, 9, 30)
     when 10..12 
-      return Date.new(day.year, 12, 31)
+      Date.new(day.year, 12, 31)
     end
   end
 
