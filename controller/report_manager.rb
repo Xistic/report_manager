@@ -17,34 +17,53 @@ class ReportManager
   end
 
   def get_report(type)
-    date_deadline = @time_machine.deadline_date(type.downcase.gsub(' ', '_'))
-    days_to_deadline = @time_machine.days_to_deadline(type.downcase.gsub(' ', '_'))
-
+    date_deadline = @time_machine.deadline_date(type)
+    days_to_deadline = @time_machine.days_to_deadline(type)
+  
     report = Report.new(type, date_deadline, days_to_deadline)
-
-    puts report
-
-    report_file = @report_files[type.downcase.gsub(' ', '_').to_sym]
-    File.open(report_file, 'w') do |file|
-      file.write(report.to_json)
-    end
+    report_file = @report_files[type.to_sym]
+    write_report_to_file(report, report_file)
   end
 
   def reports_filter
-    min_days_to_deadline = Float::INFINITY
+    min_days_to_deadline = 325
     min_days_report = nil
-  
+
     @report_files.each do |type, file_path|
       report_data = load_report_data(file_path)
+      puts "Отчет из общего списка #{report_data}"
       if report_data && report_data['Days-to-Deadline'] < min_days_to_deadline
         min_days_to_deadline = report_data['Days-to-Deadline']
         min_days_report = report_data
       end
     end
-  
+
     puts min_days_report
     puts min_days_to_deadline
   end
+
+  def update_report()
+    @report_files.each do |type, file_path|
+      report_data = load_report_data(file_path)
+      if @time_machine.check_report_condition(report_data, type)
+     
+        days_to_deadline = @time_machine.check_report_condition(report_data, type)
+        report = Report.new(type, report_data['Date-Deadline'], days_to_deadline)
+
+        report_file = @report_files[type.to_sym]
+        write_report_to_file(report, report_file)
+        
+      else 
+        get_report(type) 
+      end
+    end
+  end 
+
+  def reload_folder 
+    @report_files.each do |type, file_path|
+      get_report(type)
+    end
+  end 
 
   private
 
@@ -53,4 +72,10 @@ class ReportManager
       JSON.parse(File.read(file_path))
     end
   end 
+
+  def write_report_to_file(report, file_path)
+    File.open(file_path, 'w') do |file|
+      file.write(report.to_json)
+    end
+  end
 end

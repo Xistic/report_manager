@@ -18,22 +18,34 @@ class ReportTimeMachine
         (get_deadline(report_type) - @today).to_i 
     end
 
-   
+    def check_report_condition(report_data, type)
+        if report_data && report_data['Date-Deadline']
+            deadline = Date.parse(report_data['Date-Deadline'])
+            if deadline > @today 
+                return days_to_deadline_fresh(deadline)
+            end 
+        end
+        return false
+    end
 
     private 
 
+    def days_to_deadline_fresh(deadline)
+        (deadline - @today).to_i
+    end
+
     def get_deadline(report_type)
         case report_type.downcase
-        when 'monthly'
+        when :monthly
             working_days_only(@today.next_month)
-        when 'quarterly_10'
+        when :quarterly_10
             working_days_only(end_of_quarter(@today).next_month) 
-        when 'quarterly_30'
+        when :quarterly_30
             quarterly_start = end_of_quarter(@today).next_month
             Date.new(quarterly_start.year, quarterly_start.month, 30)
-        when 'annual_10'
+        when :annual_10
             working_days_only(Date.new(@today.year + 1, 1, 30))
-        when 'annual_30'
+        when :annual_30
             Date.new(@today.year + 1, 1, 30)
         else
             raise ArgumentError, "Что за тип, братишка?: #{report_type}"
@@ -63,7 +75,6 @@ class ReportTimeMachine
 
         current_day
 
-        puts @today
     end 
 
     def weekend_or_holiday?(date)
