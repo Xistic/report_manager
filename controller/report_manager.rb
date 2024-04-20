@@ -28,16 +28,21 @@ class ReportManager
 
   def reports_filter
     min_days_to_deadline = 325
-    min_days_report = nil
-
+    min_days_report = []
+  
     @report_files.each do |type, file_path|
       report_data = load_report_data(file_path)
-      if report_data && report_data['Days-to-Deadline'] < min_days_to_deadline
-        min_days_to_deadline = report_data['Days-to-Deadline']
-        min_days_report = report_data
+      if report_data
+        if report_data['Days-to-Deadline'] <= min_days_to_deadline
+          if report_data['Days-to-Deadline'] < min_days_to_deadline
+            min_days_report = []
+            min_days_to_deadline = report_data['Days-to-Deadline']
+          end
+          min_days_report << report_data
+        end
       end
     end
-
+  
     puts min_days_report
   end
 
