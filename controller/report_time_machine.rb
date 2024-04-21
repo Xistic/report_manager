@@ -40,8 +40,7 @@ class ReportTimeMachine
     when :quarterly_10
       working_days_only(end_of_quarter(@today).next_month) 
     when :quarterly_30
-      quarterly_start = end_of_quarter(@today).next_month
-      Date.new(quarterly_start.year, quarterly_start.month, 30)
+      quarterly_start = end_of_quarter(@today)
     when :annual_30
       Date.new(@today.year + 1, 1, 30)
     else
@@ -51,14 +50,12 @@ class ReportTimeMachine
 
   def end_of_quarter(day)
     case day.month
-    when 1..3 
-      Date.new(day.year, 3, 31)
-    when 4..6 
-      Date.new(day.year, 6, 30)
-    when 7..9 
-      Date.new(day.year, 9, 30)
-    when 10..12 
-      Date.new(day.year, 12, 31)
+    when 4 
+      Date.new(day.year, 4, 30)
+    when 7
+      Date.new(day.year, 7, 30)
+    when 10 
+      Date.new(day.year, 10, 30)
     end
   end
 
