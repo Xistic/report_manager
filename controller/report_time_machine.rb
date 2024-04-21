@@ -38,7 +38,7 @@ class ReportTimeMachine
     when :monthly
       working_days_only(@today.next_month)
     when :quarterly_10
-      working_days_only(end_of_quarter(@today).next_month) 
+      working_days_only(end_of_quarter(@today)) 
     when :quarterly_30
       quarterly_start = end_of_quarter(@today)
     when :annual_30
