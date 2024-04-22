@@ -34,7 +34,7 @@ class ReportTimeMachine
   end
 
   def get_deadline(report_type)
-    case report_type.downcase
+    case report_type
     when :monthly
       working_days_only(@today.next_month)
     when :quarterly_10
@@ -50,12 +50,14 @@ class ReportTimeMachine
 
   def end_of_quarter(day)
     case day.month
-    when 4 
+    when 1..3 
       Date.new(day.year, 4, 30)
-    when 7
+    when 4..6
       Date.new(day.year, 7, 30)
-    when 10 
+    when 7..9
       Date.new(day.year, 10, 30)
+    else 
+      Date.new(day.year + 1, 1, 15)
     end
   end
 
