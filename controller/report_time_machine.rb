@@ -1,53 +1,41 @@
-require_relative 'report_manager'
 require 'date'
 require 'json'
-
+require 'holidays'
 
 class ReportTimeMachine
   def initialize
     @today = Date.today
-    @holidays = load_json('chest/consultant2024.json')
   end
 
   def deadline_date(report_type)
     get_deadline(report_type)
   end
-
+  
   def days_to_deadline(report_type)
-    (get_deadline(report_type) - @today).to_i 
-  end
-
-  def check_report_condition(report_data, type)
-    if report_data && report_data['Date-Deadline']
-      deadline = Date.parse(report_data['Date-Deadline'])
-      if deadline > @today 
-        return days_to_deadline_fresh(deadline)
-      end 
-    end
-    false
+    (get_deadline(report_type) - @today).to_i
   end
 
   private 
 
-  def days_to_deadline_fresh(deadline)
-    (deadline - @today).to_i
-  end
-
   def get_deadline(report_type)
     case report_type
     when :monthly
-      working_days_only(@today.next_month)
+      if tenth_workday_of_month(@today) < @today
+        tenth_workday_of_month(@today.next_month)
+      else 
+        tenth_workday_of_month(@today)
+      end 
     when :quarterly_10
-      working_days_only(start_of_quarter(@today)) 
+      tenth_workday_of_month(start_of_quarter(@today)) 
     when :quarterly_30
-      quarterly_start = end_of_quarter(@today)
+      end_of_quarter(@today)
     when :annual_30
       Date.new(@today.year + 1, 1, 30)
     else
-      raise ArgumentError, "Что за тип, братишка?: #{report_type}"
+      raise ArgumentError, "Unknown report type: #{report_type}"
     end 
   end
-
+  
   def end_of_quarter(day)
     case day.month
     when 3, 4
@@ -74,25 +62,13 @@ class ReportTimeMachine
     end
   end
 
-  def working_days_only(start_month)
-    current_day = Date.new(start_month.year, start_month.month, 1)
-    working_days = 10
-    until working_days == 0
-      current_day += 1
-      working_days -= 1 unless weekend_or_holiday?(current_day)
+  def tenth_workday_of_month(day)
+    date = Date.new(day.year, day.month, 1)
+    workdays_count = 0
+    while workdays_count < 10
+      workdays_count += 1 unless Holidays.on(date, :ru).any? || date.saturday? || date.sunday?
+      date += 1
     end
-    current_day
-  end 
-
-  def weekend_or_holiday?(date)
-    date.saturday? || date.sunday? || holiday?(date)
-  end
-  
-  def holiday?(date)
-    @holidays.include?(date.strftime("%Y-%m-%d"))
-  end
-
-  def load_json(file_path)
-    JSON.parse(File.read(file_path))
+    date - 1 
   end
 end 

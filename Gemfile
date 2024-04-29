@@ -4,3 +4,4 @@ source "https://rubygems.org"
 
 # gem "rails"
 gem 'timecop'
+gem 'holidays'
