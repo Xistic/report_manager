@@ -1,6 +1,5 @@
 require_relative '../models/report'
 require_relative 'report_time_machine'
-require 'json'
 require 'date'
 
 class ReportManager

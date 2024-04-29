@@ -1,5 +1,4 @@
 require 'date'
-require 'json'
 require 'holidays'
 
 class ReportTimeMachine
